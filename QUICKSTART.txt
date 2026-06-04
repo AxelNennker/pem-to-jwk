@@ -1,0 +1,113 @@
+PEM to JWK Converter - Quick Start Guide
+=========================================
+
+INSTALLATION
+------------
+No installation required! Just ensure you have Java 11+ installed.
+
+  java --version
+
+BASIC USAGE
+-----------
+1. Make the wrapper script executable:
+   chmod +x pem-to-jwk
+
+2. Convert a PEM key to JWK:
+   ./pem-to-jwk --input your-key.pem
+
+3. Save output to file:
+   ./pem-to-jwk --input your-key.pem --output key.jwk
+
+4. Use with custom parameters:
+   ./pem-to-jwk -i key.pem -o key.jwk --kid mykey --use sig --alg RS256
+
+COMMON COMMANDS
+---------------
+# Convert RSA public key with signing parameters
+./pem-to-jwk --input rsa_public.pem --use sig --alg RS256
+
+# Convert EC public key
+./pem-to-jwk --input ec_public.pem --use sig --alg ES256
+
+# Convert RSA private key with custom kid
+./pem-to-jwk --input rsa_private.pem --kid my-private-key-2024
+
+# Pipe from stdin to stdout
+cat key.pem | ./pem-to-jwk
+
+# With multiple key operations
+./pem-to-jwk -i key.pem --key-ops "sign,verify"
+
+TESTING
+-------
+Run the test suite to verify everything works:
+
+  ./test.sh
+
+GENERATE TEST KEYS
+------------------
+# RSA keys (2048-bit)
+openssl genrsa -out my_rsa_private.pem 2048
+openssl rsa -in my_rsa_private.pem -pubout -out my_rsa_public.pem
+
+# EC keys (P-256)
+openssl ecparam -name prime256v1 -genkey -noout -out my_ec_private.pem
+openssl ec -in my_ec_private.pem -pubout -out my_ec_public.pem
+
+SUPPORTED KEY TYPES
+-------------------
+✓ RSA Public Keys (X.509/PKCS#1)
+✓ RSA Private Keys (PKCS#8 with CRT)
+✓ EC Public Keys (X.509, P-256/P-384/P-521)
+✗ EC Private Keys (not supported - use public key)
+
+COMMAND-LINE OPTIONS
+--------------------
+--input, -i FILE     Input PEM file (or use stdin)
+--output, -o FILE    Output JWK file (or use stdout)
+--kid VALUE          Custom key ID (default: thumbprint)
+--use VALUE          Key use: 'sig' or 'enc'
+--alg VALUE          Algorithm: RS256, RS384, RS512, ES256, ES384, ES512, etc.
+--key-ops VALUES     Key operations (comma-separated): sign,verify,encrypt,decrypt,etc.
+--help, -h           Show help
+--version, -v        Show version
+
+RFC STANDARDS
+-------------
+This tool implements:
+- RFC 7517: JSON Web Key (JWK)
+- RFC 7638: JWK Thumbprint
+
+TROUBLESHOOTING
+---------------
+Q: "Java not found"
+A: Install Java 11 or higher from your package manager or https://adoptium.net
+
+Q: "Permission denied" when running ./pem-to-jwk
+A: Run: chmod +x pem-to-jwk
+
+Q: Output is empty or file not created
+A: Check that your PEM file is valid and properly formatted
+
+Q: "Unsupported key type"
+A: Only RSA and EC (P-256/384/521) keys are supported
+
+EXAMPLES
+--------
+1. Basic conversion:
+   ./pem-to-jwk -i my_key.pem > my_key.jwk
+
+2. With all parameters:
+   ./pem-to-jwk -i key.pem -o key.jwk --kid prod-key-1 --use sig --alg RS256
+
+3. Multiple files:
+   for file in *.pem; do
+     ./pem-to-jwk -i "$file" -o "${file%.pem}.jwk"
+   done
+
+NEED HELP?
+----------
+Run: ./pem-to-jwk --help
+Read: README.md for detailed documentation
+
+For more information, see README.md

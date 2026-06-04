@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Simple wrapper script to run PemToJwkStandalone
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Check if Java is available
+if ! command -v java &> /dev/null; then
+    echo "Error: Java not found. Please install Java 17 or higher."
+    exit 1
+fi
+
+# Run the standalone Java application
+exec java "$SCRIPT_DIR/PemToJwkStandalone.java" "$@"
